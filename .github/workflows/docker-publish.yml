@@ -64,22 +64,46 @@ jobs:
           set -euo pipefail
 
           if [ "${OWNER_TYPE}" = "Organization" ]; then
-            endpoint="https://api.github.com/orgs/${OWNER}/packages/container/${PACKAGE}"
+            metadata_endpoint="https://api.github.com/orgs/${OWNER}/packages/container/${PACKAGE}"
+            visibility_endpoint="${metadata_endpoint}/visibility"
           else
-            endpoint="https://api.github.com/user/packages/container/${PACKAGE}"
+            metadata_endpoint="https://api.github.com/users/${OWNER}/packages/container/${PACKAGE}"
+            visibility_endpoint="https://api.github.com/user/packages/container/${PACKAGE}/visibility"
           fi
 
-          visibility="$(curl -fsSL \
+          metadata_file="$(mktemp)"
+          metadata_status="$(curl -sS -o "${metadata_file}" -w "%{http_code}" \
             -H "Authorization: Bearer ${GH_TOKEN}" \
             -H "Accept: application/vnd.github+json" \
-            "${endpoint}" | jq -r '.visibility')"
+            "${metadata_endpoint}")"
+
+          if [ "${metadata_status}" != "200" ]; then
+            echo "Failed to read package metadata from ${metadata_endpoint} (HTTP ${metadata_status})"
+            cat "${metadata_file}"
+            exit 1
+          fi
+
+          visibility="$(jq -r '.visibility // empty' "${metadata_file}")"
+
+          if [ -z "${visibility}" ]; then
+            echo "Package visibility not found in API response from ${metadata_endpoint}"
+            cat "${metadata_file}"
+            exit 1
+          fi
 
           if [ "${visibility}" != "public" ]; then
-            curl -fsSL -X PATCH \
+            update_file="$(mktemp)"
+            update_status="$(curl -sS -o "${update_file}" -w "%{http_code}" -X PATCH \
               -H "Authorization: Bearer ${GH_TOKEN}" \
               -H "Accept: application/vnd.github+json" \
-              "${endpoint}/visibility" \
-              -d '{"visibility":"public"}'
+              "${visibility_endpoint}" \
+              -d '{"visibility":"public"}')"
+
+            if [ "${update_status}" != "200" ] && [ "${update_status}" != "204" ]; then
+              echo "Failed to set package visibility via ${visibility_endpoint} (HTTP ${update_status})"
+              cat "${update_file}"
+              exit 1
+            fi
           fi
 
       - name: Verify GHCR pull works
@@ -91,6 +115,7 @@ jobs:
           docker logout "${{ env.REGISTRY }}" || true
 
           for attempt in 1 2 3; do
+            echo "Anonymous GHCR pull attempt ${attempt}/3"
             if docker pull "${IMAGE_REF}"; then
               exit 0
             fi
