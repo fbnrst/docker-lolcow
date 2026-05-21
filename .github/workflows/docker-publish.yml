@@ -112,14 +112,17 @@ jobs:
           IMAGE_REF: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }}
         run: |
           set -euo pipefail
+          MAX_ATTEMPTS=3
+          RETRY_DELAY_SECONDS=10
+
           docker logout "${{ env.REGISTRY }}" || true
 
-          for attempt in 1 2 3; do
-            echo "Anonymous GHCR pull attempt ${attempt}/3"
+          for attempt in $(seq 1 "${MAX_ATTEMPTS}"); do
+            echo "Anonymous GHCR pull attempt ${attempt}/${MAX_ATTEMPTS}"
             if docker pull "${IMAGE_REF}"; then
               exit 0
             fi
-            sleep 10
+            sleep "${RETRY_DELAY_SECONDS}"
           done
 
           echo "Failed to pull ${IMAGE_REF} after retries"
