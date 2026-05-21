@@ -24,6 +24,7 @@ Run:
 docker run --rm ghcr.io/fbnrst/docker-lolcow:latest
 ```
 
+Docker will pull the image automatically if it is not present locally.
 You should see a random fortune rendered by `cowsay` with colors from `lolcat`.
 If GHCR access fails with a permission error, use the local build flow below instead.
 
