@@ -1,23 +1,33 @@
 # docker-lolcow
 
-Tiny teaching repo: build a Docker image that prints a colorful, funny cow quote when the container starts.
+Tiny teaching repo: run a Docker image that prints a colorful, funny cow quote when the container starts.
 
-## What this repo contains
+## Repository structure
 
-- `Dockerfile` - simple image based on Ubuntu
-- `.github/workflows/docker-publish.yml` - GitHub Actions workflow that builds the image and pushes it to GHCR on `main`
-- `.pre-commit-config.yaml` - basic formatting/safety hooks for contributions
+- `Dockerfile` - minimal runtime image based on Ubuntu 24.04 with `fortune`, `cowsay`, and `lolcat`.
+- `.github/workflows/docker-publish.yml` - CI workflow that:
+  - builds on pull requests (build only)
+  - builds and publishes to GHCR on `main`
+- `.pre-commit-config.yaml` - basic formatting/safety hooks for contributions.
 
-## Run locally
+## Run from GHCR (recommended)
+
+Published image path:
+
+```text
+ghcr.io/fbnrst/docker-lolcow
+```
+
+Pull and run:
 
 ```bash
-docker build -t docker-lolcow .
-docker run --rm docker-lolcow
+docker pull ghcr.io/fbnrst/docker-lolcow:latest
+docker run --rm ghcr.io/fbnrst/docker-lolcow:latest
 ```
 
 You should see a random fortune rendered by `cowsay` with colors from `lolcat`.
 
-## GitHub Actions + GHCR
+## GitHub Actions + GHCR publishing
 
 The workflow does this:
 
@@ -25,15 +35,9 @@ The workflow does this:
 2. On pushes to `main`, logs in to `ghcr.io`
 3. Pushes image tags to `ghcr.io/<owner>/<repo>`
 
-Example image path for this repo:
-
-```text
-ghcr.io/fbnrst/docker-lolcow
-```
-
-## Pull image from GHCR
+## Local build (optional)
 
 ```bash
-docker pull ghcr.io/fbnrst/docker-lolcow:latest
-docker run --rm ghcr.io/fbnrst/docker-lolcow:latest
+docker build -t docker-lolcow .
+docker run --rm docker-lolcow
 ```
