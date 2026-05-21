@@ -8,7 +8,4 @@ RUN apt-get update \
         lolcat \
     && rm -rf /var/lib/apt/lists/*
 
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["/bin/bash", "-lc", "/usr/games/fortune | /usr/games/cowsay | /usr/games/lolcat -f"]

@@ -5,8 +5,8 @@ Tiny teaching repo: build a Docker image that prints a colorful, funny cow quote
 ## What this repo contains
 
 - `Dockerfile` - simple image based on Ubuntu
-- `entrypoint.sh` - runs `fortune | cowsay | lolcat`
 - `.github/workflows/docker-publish.yml` - GitHub Actions workflow that builds the image and pushes it to GHCR on `main`
+- `.pre-commit-config.yaml` - basic formatting/safety hooks for contributions
 
 ## Run locally
 
