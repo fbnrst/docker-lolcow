@@ -8,4 +8,4 @@ RUN apt-get update \
         lolcat \
     && rm -rf /var/lib/apt/lists/*
 
-CMD ["/bin/bash", "-lc", "/usr/games/fortune | /usr/games/cowsay | /usr/games/lolcat -f"]
+CMD ["/bin/bash", "-c", "/usr/games/fortune | /usr/games/cowsay | /usr/games/lolcat -f"]
