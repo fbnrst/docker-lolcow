@@ -10,7 +10,7 @@ Tiny teaching repo: run a Docker image that prints a colorful, funny cow quote w
   - builds and publishes to GHCR on `main`
 - `.pre-commit-config.yaml` - basic formatting/safety hooks for contributions.
 
-## Run from GHCR (recommended)
+## Run from GHCR (optional)
 
 Published image path:
 
@@ -26,17 +26,7 @@ docker run --rm ghcr.io/fbnrst/docker-lolcow:latest
 
 Docker will pull the image automatically if it is not present locally.
 You should see a random fortune rendered by `cowsay` with colors from `lolcat`.
-
-If GHCR access fails with a permission error:
-
-1. Ensure package visibility is **Public** in GitHub Packages (`fbnrst/docker-lolcow` package settings).
-2. If the package is private, authenticate Docker with a token that has `read:packages`:
-
-```bash
-echo <YOUR_GITHUB_TOKEN_WITH_read:packages> | docker login ghcr.io -u <github-username> --password-stdin
-docker pull ghcr.io/fbnrst/docker-lolcow:latest
-docker run --rm ghcr.io/fbnrst/docker-lolcow:latest
-```
+If GHCR access fails with a permission error, use the local build flow below instead.
 
 ## GitHub Actions + GHCR publishing
 
@@ -46,7 +36,7 @@ The workflow does this:
 2. On pushes to `main`, logs in to `ghcr.io`
 3. Pushes image tags to `ghcr.io/<owner>/<repo>`
 
-## Local build (optional)
+## Local build (recommended)
 
 ```bash
 docker build -t docker-lolcow .
