@@ -18,10 +18,11 @@ Published image path:
 ghcr.io/fbnrst/docker-lolcow
 ```
 
-Run (auto-pulls latest):
+Run:
 
 ```bash
-docker run --pull always --rm ghcr.io/fbnrst/docker-lolcow:latest
+docker pull ghcr.io/fbnrst/docker-lolcow:latest
+docker run --rm ghcr.io/fbnrst/docker-lolcow:latest
 ```
 
 You should see a random fortune rendered by `cowsay` with colors from `lolcat`.
